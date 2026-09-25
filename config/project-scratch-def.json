@@ -1,0 +1,6 @@
+{
+  "orgName": "health-cloud-member-360",
+  "edition": "Developer",
+  "features": ["EnableSetPasswordInApi"],
+  "settings": { "lightningExperienceSettings": { "enableS1DesktopEnabled": true } }
+}
