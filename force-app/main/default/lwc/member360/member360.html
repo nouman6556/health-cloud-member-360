@@ -1,0 +1,67 @@
+<template>
+    <lightning-card>
+        <template lwc:if={member}>
+            <div slot="title" class="header">
+                <lightning-icon icon-name="standard:individual" size="medium"></lightning-icon>
+                <div>
+                    <h2 class="slds-text-heading_medium">{member.name}</h2>
+                    <p class="slds-text-body_small muted">{subtitle}</p>
+                </div>
+                <lightning-badge label={member.coverageStatus} class={coverageBadgeClass}></lightning-badge>
+            </div>
+
+            <div class="slds-p-horizontal_medium">
+                <template lwc:if={hasAlerts}>
+                    <div class="alerts slds-m-bottom_medium" role="alert">
+                        <template for:each={member.alerts} for:item="alert">
+                            <p key={alert} class="alert">
+                                <lightning-icon icon-name="utility:warning" size="x-small" variant="warning"></lightning-icon>
+                                <span>{alert}</span>
+                            </p>
+                        </template>
+                    </div>
+                </template>
+
+                <div class="stats slds-m-bottom_medium">
+                    <div class="stat"><p class="stat-value">{member.encountersLast12Months}</p><p class="stat-label">Encounters (12 mo)</p></div>
+                    <div class="stat"><p class="stat-value">{member.emergencyVisitsLast12Months}</p><p class="stat-label">ER visits (12 mo)</p></div>
+                    <div class="stat"><p class="stat-value">{carePlanCount}</p><p class="stat-label">Active care plans</p></div>
+                    <div class="stat"><p class="stat-value">{careTeamCount}</p><p class="stat-label">Care team</p></div>
+                </div>
+
+                <lightning-tabset variant="scoped">
+                    <lightning-tab label="Coverage">
+                        <lightning-datatable key-field="Id" data={member.coverages} columns={coverageColumns}
+                            hide-checkbox-column></lightning-datatable>
+                    </lightning-tab>
+                    <lightning-tab label="Care Plans">
+                        <template for:each={member.activeCarePlans} for:item="plan">
+                            <div key={plan.Id} class="row">
+                                <p class="slds-text-title_bold">{plan.Goal__c}</p>
+                                <p class="slds-text-body_small muted">Started <lightning-formatted-date-time value={plan.Start_Date__c}></lightning-formatted-date-time></p>
+                            </div>
+                        </template>
+                    </lightning-tab>
+                    <lightning-tab label="Care Team">
+                        <template for:each={member.careTeam} for:item="ctm">
+                            <div key={ctm.Id} class="row">
+                                <p class="slds-text-title_bold">{ctm.Team_Member_Name__c}</p>
+                                <p class="slds-text-body_small muted">{ctm.Role__c} · <lightning-formatted-phone value={ctm.Phone__c}></lightning-formatted-phone></p>
+                            </div>
+                        </template>
+                    </lightning-tab>
+                    <lightning-tab label="Recent Encounters">
+                        <lightning-datatable key-field="Id" data={member.recentEncounters} columns={encounterColumns}
+                            hide-checkbox-column></lightning-datatable>
+                    </lightning-tab>
+                </lightning-tabset>
+            </div>
+        </template>
+        <template lwc:elseif={error}>
+            <p class="slds-p-around_medium slds-text-color_error">{error}</p>
+        </template>
+        <template lwc:else>
+            <lightning-spinner alternative-text="Loading member" size="small"></lightning-spinner>
+        </template>
+    </lightning-card>
+</template>
